@@ -5,7 +5,8 @@
 		<meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-		<script src="https://unpkg.com/vue/dist/vue.js"></script>
+		<link rel="stylesheet" href="style.css">
+        <script src="https://unpkg.com/vue/dist/vue.js"></script>
 	  	<!-- Plotly.js -->
 	  	<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 	</head>
@@ -40,6 +41,7 @@
 				</div>
 			</div>
 			<hr>
+            <section>
 			<div class="container" style="margin-bottom: 15px;">
 				<div class="col-md-7">
 					<h1><b>Probabilidad final <small>(promedio)</small>: </b><span id="result"></span></h1>
@@ -51,16 +53,16 @@
 						<label>Ingresa la cantidad de pelotas en la caja</label>
 						<!-- Puse bastantes forms, se que no deberia pero solo queria que se viera como queria -->
 						<form class="form-group-sm">
-	                        <div class="row" style="margin-bottom: 10px;">
-	                        	<div class="col-md-6">
+	                        <div class="row">
+	                        	<div class="col-md-6 margin-bot">
 		                        	<input class="form-control" style="border: 1px solid red;" placeholder="numero de pelotas rojas" type="number" name="cantidad rojas" v-model="pelotas[0].cantidad"/>
 		                    	</div>
-		                        <div class="col-md-6">
+		                        <div class="col-md-6 margin-bot">
 		                        	<input class="form-control" placeholder="numero de pelotas blancas" type="number" name="cantidad blancas" v-model="pelotas[1].cantidad"/>
 		                    	</div>
 	                        </div>
-	                        <div class="row" style="margin-bottom: 10px;">
-	                        	<div class="col-md-6">
+	                        <div class="row">
+	                        	<div class="col-md-6 margin-bot">
 		                        	<input class="form-control" style="border: 1px solid green;" placeholder="numero de pelotas verdes" type="number" name="cantidad verdes" v-model="pelotas[2].cantidad"/>
 	                        	</div>
 	                        	<div class="col-md-6"></div>
@@ -68,15 +70,15 @@
                         </form>
                         <label>Ingresa las distintas combinaciones</label>
                         <form class="form-group-sm">
-	                        <div class="row" style="margin-bottom: 10px;">
-	                        	<div class="col-md-6">
+	                        <div class="row">
+	                        	<div class="col-md-6 margin-bot">
 	                        		<input class="form-control" style="border: 1px solid red;" placeholder="combinacion de pelotas rojas" type="number" name="combinaciones rojas" v-model="combinaciones[0].cantidad"/>
 	                        	</div>
-	                        	<div class="col-md-6">
+	                        	<div class="col-md-6 margin-bot">
 	                        		<input class="form-control" placeholder="combinacion de pelotas blancas" type="number" name="combinaciones blancas" v-model="combinaciones[1].cantidad"/>
 	                        	</div>
 	                        </div>
-	                        <div class="row" style="margin-bottom: 10px;">
+	                        <div class="row margin-bot margin-bot">
 	                        	<div class="col-md-6">
 	                        		<input class="form-control" style="border: 1px solid green;" placeholder="combinacion de pelotas verdes" type="number" name="combinaciones verdes" v-model="combinaciones[2].cantidad"/>
 	                        	</div>
@@ -93,6 +95,7 @@
                     </div>
 				</div>
 			</div>
+            </section>
 		</main>
 	</div>
 	<script src="cajaPelotas.js"></script>

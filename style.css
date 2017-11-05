@@ -1,0 +1,19 @@
+.jumbotron{
+    background-color: #87aae2;
+    border-bottom: rgba( 103, 130, 171, 0.32 ) 3px solid;
+    border-bottom-left-radius: 2%;
+    border-bottom-right-radius: 2%;
+    box-shadow: -1px 1px 2px 1px gray;
+}
+#myDiv{
+    margin-top: 10px
+}
+section{
+    border-top-left-radius: 1%;
+    border-top-right-radius: 1%;
+    padding: 20px 0px;
+    background-color: rgba( 70, 118, 190, 0.32 )
+}
+.margin-bot{
+    margin-bottom: 10px;
+}
