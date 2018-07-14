@@ -3,101 +3,221 @@
 	<head>
 		<title>Simulacion de Probabilidad</title>
 		<meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-		<link rel="stylesheet" href="style.css">
-        <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css">
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
 	  	<!-- Plotly.js -->
-	  	<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+	 	<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+	 	<style>
+	 		.fade-enter-active, .fade-leave-active {
+			  transition: opacity .5s;
+			}
+			.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+			  opacity: 0;
+			}
+	 	</style>
 	</head>
 	<body>
-	<div id="app">
-		<header class="jumbotron" style="padding: 18px 50px; margin-bottom: 10px;">
-			<div class="container-fluid">
-				<h1>Probabilidades</h1>
+		<div id="app">
+			<header class="hero is-link">
+				<div class="has-text-centered hero-body">
+					<h1 class="title is-1">Probabilidades</h1>
+					<h2 class="subtitle">And aleatory <strong>experiments</strong></h2>
+				</div>
+				<div class="hero-footer">
+					<div class="tabs is-boxed is-fullwidth">
+						<div class="container">
+							<ul>
+								<li v-bind:class="{'is-active': current_view == 'home'}" v-on:click="current_view = 'home'"><a href="#">Home</a></li>
+								<li v-bind:class="{'is-active': current_view == 'previous_stats'}" v-on:click="current_view = 'previous_stats'"><a href="#">Previous Stats</a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</header>
+			<main>
+				<keep-alive>
+					<component v-bind:is='current_view' v-bind:previous_data="previous_data"></component>
+				</keep-alive>
+			</main>
+		</div>
+		<template id="home">
+			<div>
+				<!-- notification -->
+				<aside>
+					<transition name="fade">
+						<div v-show="isSubmitted" class="notification navbar is-fixed-top" v-bind:class="{'is-info': notification.status == 'success', 'is-danger': notification.status == 'error'}" style="width: 50%; margin: 0 auto; margin-top: 15px">
+							<button v-on:click="isSubmitted = false" class="delete"></button>
+							<p>{{ notification.message }}</p>
+						</div>
+					</transition>
+				</aside>
+				<div class="container is-fluid">
+					<div id="myDiv"><!-- Plotly chart will be drawn inside this DIV --></div>
+				</div>
+				<section class="section">
+					<div class="container">
+						<div class="columns">
+							<div class="column">
+								<div class="content">
+									<h3 class="has-text-weight-bold has-text-centered">Aleatory experiment</h3>
+									<p class="has-text-centered-mobile">Select at random {{ total_balls }} balls from a box that contains {{ red_max }} red balls, {{ white_max }} white balls and {{ green_max }} green balls.</p>
+								</div>
+							</div>
+							<div class="column">
+								<div class="content">
+									<h3 class="has-text-weight-bold has-text-centered">Purpose</h3>
+									<p class="has-text-centered-mobile">Determine the color of the selected balls.</p>
+								</div>
+							</div>
+							<div class="column">
+								<div class="content">
+									<h3 class="has-text-weight-bold has-text-centered">Events</h3>
+									<ul>
+										<li class="has-text-centered-mobile"><b>A: </b>{{ red_min }} red balls, {{ white_min }} white balls and {{ green_min }} green balls were selected.</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</div>
+				</section>
+				<hr style="margin: 2px">
+				<aside class="hero is-link is-bold">
+					<div class="hero-body">
+						<div class="columns">
+							<div class="column is-7">
+								<h1 class="title is-4">Final probability <small class="has-text-weight-light">(average)</small>: <span id="result"></span></h1>
+								<p>If you desire a value always close to the true one, raise the number of tries inside the "while" cicle in the probability.js file (note: the program processing may get slower)</p>
+								<hr>
+								<b>Balls in <span class="icon"><span class="fa fa-archive"></span></span>:</b>
+								<span class="icon" v-for="ball in balls_inBox">
+									<span v-bind:class="{'has-text-danger': ball == 'red', 'has-text-success': ball == 'green'}">
+										<i class="fa fa-circle"></i>
+									</span>
+								</span>
+								<div class="block"></div>
+								<b>Desired combination:</b>
+								<span class="icon" v-for="ball in balls_combination">
+									<span v-bind:class="{'has-text-danger': ball == 'red', 'has-text-success': ball == 'green'}">
+										<i class="fa fa-circle"></i>
+									</span>
+								</span>
+							</div>
+							<div class="column">
+								<h1 class="title is-5">Place your numbers here:</h1>
+								<h2 class="subtitle is-6">Enter the amount of balls inside the box</h2>
+								<div class="columns is-multiline">
+									<div class="column is-6">
+										<div class="control">
+											<input type="number" class="input is-danger is-small" placeholder="number of red balls" v-model="red_max">
+										</div>
+									</div>
+									<div class="column is-6">
+										<div class="control">
+											<input type="number" class="input is-white is-small" placeholder="number of white balls" v-model="white_max">
+										</div>
+									</div>
+									<div class="column">
+										<div class="control">
+											<input type="number" class="input is-success is-small" placeholder="number of green balls" v-model="green_max">
+										</div>
+									</div>
+								</div>
+								<h2 class="subtitle is-6">Enter the various combinations</h2>
+								<div class="columns is-multiline">
+									<div class="column is-6">
+										<div class="control">
+											<input type="number" class="input is-danger is-small" placeholder="combination of red balls" v-model="red_min">
+										</div>
+									</div>
+									<div class="column is-6">
+										<div class="control">
+											<input type="number" class="input is-white is-small" placeholder="combination of white balls" v-model="white_min">
+										</div>
+									</div>
+									<div class="column">
+										<div class="control">
+											<input type="number" class="input is-success is-small" placeholder="combination of green balls" v-model="green_min">
+										</div>
+									</div>
+								</div>
+								<div class="has-text-centered">
+									<button id="calculate" class="button is-primary" style="width: 100%" v-on:click="calculate">Go!</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</aside>
 			</div>
-		</header>
-		<main>
-			<div class="container-fluid">
-				<div id="myDiv"><!-- Plotly chart will be drawn inside this DIV --></div>
+		</template>
+		<template id="previous-stats">
+			<div>
+				<section class="section level is-marginless">
+					<div class="level-item has-text-centered">
+						<div>
+							<p class="heading">Red balls in box</p>
+							<p class="title">{{ previous_data[0].red_max }}</p>
+						</div>
+					</div>
+					<div class="level-item has-text-centered">
+						<div>
+							<p class="heading">White balls in box</p>
+							<p class="title">{{ previous_data[0].white_max }}</p>
+						</div>
+					</div>
+					<div class="level-item has-text-centered">
+						<div>
+							<p class="heading">Green balls in box</p>
+							<p class="title">{{ previous_data[0].green_max }}</p>
+						</div>
+					</div>
+					<div class="level-item has-text-centered">
+						<div>
+							<p class="heading">Red balls in combination</p>
+							<p class="title">{{ previous_data[0].red_min }}</p>
+						</div>
+					</div>
+					<div class="level-item has-text-centered">
+						<div>
+							<p class="heading">White balls in combination</p>
+							<p class="title">{{ previous_data[0].white_min }}</p>
+						</div>
+					</div>
+					<div class="level-item has-text-centered">
+						<div>
+							<p class="heading">Green balls in combination</p>
+							<p class="title">{{ previous_data[0].green_min }}</p>
+						</div>
+					</div>
+				</section>	
+				<hr class="is-marginless">
+				<section class="section" style="padding: 2rem 1.5rem">
+					<!-- change this for just a simple table -->
+					<table class="table is-striped is-fullwidth">
+						<thead>
+							<tr>
+								<th>Created at</th>
+								<th>Probability</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr v-for="data in previous_data">
+								<td>{{ data.created_at }}</td>
+								<td>{{ data.probability }}</td>
+							</tr>
+						</tbody>
+					</table>
+				</section>
+				<hr class="is-marginless">
+				</section>
+				<section class="section" style="padding: 2rem 1.5rem">
+					<div class="container is-fluid">
+						<div id="line"><!-- Plotly chart will be drawn inside this DIV --></div>
+					</div>
+				</section>
 			</div>
-			<div class="container">
-				<div class="col-md-4">
-					<h2 class="text-center">Experimento aleatorio</h2>
-					<p class="hidden-sm hidden-xs">seleccionar al azar dos pelotas de una caja que contiene {{ pelotas[0].cantidad }} pelotas rojas, {{ pelotas[1].cantidad }} blancas y {{ pelotas[2].cantidad }} verdes</p><p class="hidden-md hidden-lg text-center">seleccionar al azar dos pelotas de una caja que contiene {{ pelotas[0].cantidad }} pelotas rojas, {{ pelotas[1].cantidad }} blancas y {{ pelotas[2].cantidad }} verdes. (Sin reposicion).</p>
-				</div>
-				<div class="col-md-4">
-					<h2 class="text-center">Proposito</h2>
-					<p class="hidden-sm hidden-xs">Determinar el color de las pelotas seleccionadas</p><p class="hidden-md hidden-lg text-center">Determinar el color de las pelotas seleccionadas</p>
-				</div>
-				<div class="col-md-4">
-					<h2 class="text-center">Eventos</h2>
-					<ul class="hidden-md hidden-lg text-center">
-						<li><b>A: </b>Se seleccionaron {{ combinaciones[0].cantidad }} pelotas rojas, {{ combinaciones[1].cantidad }} pelotas blancas y {{ combinaciones[2].cantidad }} pelotas verdes</li>
-					</ul>
-					<ul class="hidden-sm hidden-xs">
-						<li><b>A: </b>Se seleccionaron {{ combinaciones[0].cantidad }} pelotas rojas, {{ combinaciones[1].cantidad }} pelotas blancas y {{ combinaciones[2].cantidad }} pelotas verdes</li>
-					</ul>
-				</div>
-			</div>
-			<hr>
-            <section>
-			<div class="container" style="margin-bottom: 15px;">
-				<div class="col-md-7">
-					<h1><b>Probabilidad final <small>(promedio)</small>: </b><span id="result"></span></h1>
-					<h4><small>si desea un valor siempre cercano al verdadero, aumente el numero de intentos del ciclo "while" en el archivo .js (nota: el procesamiento del programa podria ponerse mas lento)</small></h4>
-				</div>
-				<div class="col-md-5">
-					<div class="row">
-						<label><b>Ingresa tus datos:</b></label>
-						<label>Ingresa la cantidad de pelotas en la caja</label>
-						<!-- Puse bastantes forms, se que no deberia pero solo queria que se viera como queria -->
-						<form class="form-group-sm">
-	                        <div class="row">
-	                        	<div class="col-md-6 margin-bot">
-		                        	<input class="form-control" style="border: 1px solid red;" placeholder="numero de pelotas rojas" type="number" name="cantidad rojas" v-model="pelotas[0].cantidad"/>
-		                    	</div>
-		                        <div class="col-md-6 margin-bot">
-		                        	<input class="form-control" placeholder="numero de pelotas blancas" type="number" name="cantidad blancas" v-model="pelotas[1].cantidad"/>
-		                    	</div>
-	                        </div>
-	                        <div class="row">
-	                        	<div class="col-md-6 margin-bot">
-		                        	<input class="form-control" style="border: 1px solid green;" placeholder="numero de pelotas verdes" type="number" name="cantidad verdes" v-model="pelotas[2].cantidad"/>
-	                        	</div>
-	                        	<div class="col-md-6"></div>
-	                        </div>
-                        </form>
-                        <label>Ingresa las distintas combinaciones</label>
-                        <form class="form-group-sm">
-	                        <div class="row">
-	                        	<div class="col-md-6 margin-bot">
-	                        		<input class="form-control" style="border: 1px solid red;" placeholder="combinacion de pelotas rojas" type="number" name="combinaciones rojas" v-model="combinaciones[0].cantidad"/>
-	                        	</div>
-	                        	<div class="col-md-6 margin-bot">
-	                        		<input class="form-control" placeholder="combinacion de pelotas blancas" type="number" name="combinaciones blancas" v-model="combinaciones[1].cantidad"/>
-	                        	</div>
-	                        </div>
-	                        <div class="row margin-bot margin-bot">
-	                        	<div class="col-md-6">
-	                        		<input class="form-control" style="border: 1px solid green;" placeholder="combinacion de pelotas verdes" type="number" name="combinaciones verdes" v-model="combinaciones[2].cantidad"/>
-	                        	</div>
-	                        	<div class="col-md-6"></div>
-	                        </div>
-	                    </form>
-	                    <form class="form-group-sm" v-on:submit.prevent>
-	                    	<div class="row">
-	                    		<div class="col-md-12">
-	                    			<input type="submit" value="Ingresar datos del experimento" class="form-control btn btn-primary" v-on:click="calculate"/>
-	                    		</div>
-	                    	</div>
-	                    </form>
-                    </div>
-				</div>
-			</div>
-            </section>
-		</main>
-	</div>
-	<script src="cajaPelotas.js"></script>
+		</template>
+	<script src="app.js"></script>
 	</body>
 </html>
